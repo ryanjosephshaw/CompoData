@@ -12,6 +12,7 @@ namespace ParseHtmlPage
     {
         static void Main(string[] args)
         {
+            //TODO: This is not taking into account any human error. We need to come up with test cases and do error handling.
             var headerRows = new List<CompoDataRow>();
             var filePath = args[0];
             var doc = new HtmlDocument();
@@ -35,6 +36,20 @@ namespace ParseHtmlPage
                 headerRow.CompletedAt = rowCells[8].InnerText;
                 headerRow.Status = rowCells[9].InnerText;
                 headerRows.Add(headerRow);
+                var detailRows = doc.DocumentNode.SelectNodes("//table[contains(@id, 'subtasks-table-" + headerRow.Id + "')]//tr");
+                foreach (var detailRow in detailRows) {
+                    if (!detailRow.Equals(detailRows.LastOrDefault()))
+                    {
+                        var numberPattern = new Regex(@"#(\d+)");
+                        var headerDetailRow = new DetailRow();
+                        var children = detailRow.ChildNodes;
+                        var descriptionLine = children[1].InnerText;
+                        headerDetailRow.Number = Convert.ToInt32(numberPattern.Match(descriptionLine).Groups[1].Value);
+                        //TODO: pull description and quantity out. Need to link the headerRow with detail by having a collection of detail.
+                        var teamLine = children[2].InnerText;
+                        headerDetailRow.Status = children[3].InnerText.Trim();
+                    }
+                }
             }
          }
     }
