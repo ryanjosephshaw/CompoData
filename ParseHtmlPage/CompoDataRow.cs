@@ -19,5 +19,6 @@ namespace ParseHtmlPage
         public string DaysSinceAssigned { get; set; }
         public string CompletedAt { get; set; }
         public string Status { get; set; }
+        public List<DetailRow> Details { get; set; }
     }
 }
